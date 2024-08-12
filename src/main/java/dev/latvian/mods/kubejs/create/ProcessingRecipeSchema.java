@@ -26,7 +26,8 @@ import dev.latvian.mods.kubejs.recipe.component.StringComponent;
 import dev.latvian.mods.kubejs.recipe.component.TimeComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.util.MapJS;
-import io.github.fabricators_of_create.porting_lib.util.FluidStack;
+import io.github.fabricators_of_create.porting_lib.fluids.FluidStack;
+import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -117,12 +118,16 @@ public interface ProcessingRecipeSchema {
 				return true;
 			}
 
-			var input = readInputItem(from);
-			if (input.ingredient instanceof BlockTagIngredient blockTag) {
-				return !TagContext.INSTANCE.getValue().isEmpty(blockTag.getTag());
-			}
+				var input = readInputItem(from);
+				if (input.ingredient instanceof CustomIngredient) {
+					CustomIngredient customIngredient = (CustomIngredient) input.ingredient;
+					if (customIngredient instanceof BlockTagIngredient) {
+						BlockTagIngredient blockTag = (BlockTagIngredient) customIngredient;
+						return !TagContext.INSTANCE.getValue().isEmpty(blockTag.getTag());
+					}
+				}
 
-			return !input.isEmpty();
+				return !input.isEmpty();
 		}
 
 		@Override
